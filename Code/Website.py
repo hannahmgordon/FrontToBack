@@ -12,16 +12,7 @@ def load_data():
     data["YearMonth"] = data["Return Date"].dt.to_period("M").dt.to_timestamp()
     return data
 
-def load_sp500():
-    sp500 = pd.read_csv("SP500_historical.csv")
-    sp500["date"] = pd.to_datetime(sp500["date"])
-    sp500["Year"] = sp500["date"].dt.year
-    sp500 = sp500.rename(columns={"Return": "SP500_Return"})
-    print(sp500.columns)
-    return sp500
-
 data = load_data()
-sp500_data = load_sp500()
 
 # Sidebar navigation
 st.sidebar.title("Navigation")
@@ -59,14 +50,9 @@ elif page == "Annual 10-K Returns by Company":
     if selected_symbol:
         fig, ax = plt.subplots(figsize=(10, 6))
 
-        # Plot SP500 returns as faint grey line
-        sp500_filtered = sp500_data[sp500_data["Year"] >= 2004]
-        ax.plot(sp500_filtered["Year"], sp500_filtered["SP500_Return"], color="#bbbbbb", linewidth=2, alpha=0.6, label="S&P 500")
-
         # Plot selected company with bin coloring
         symbol_df = data[data["Symbol"] == selected_symbol]
         yearly = symbol_df.groupby("Year").agg({"Return": "mean", "Bins": "first"}).reset_index()
-        yearly = yearly[yearly["Year"] >= 2004]
         yearly = yearly.sort_values("Year")
 
         for i in range(len(yearly) - 1):
@@ -85,7 +71,6 @@ elif page == "Annual 10-K Returns by Company":
         ax.grid(True)
 
         all_years = sorted(data["Year"].unique())
-        all_years = [y for y in all_years if y >= 2004]
         ax.set_xticks(all_years)
         ax.set_xticklabels([str(y) if i % 2 == 0 else '' for i, y in enumerate(all_years)])
 
