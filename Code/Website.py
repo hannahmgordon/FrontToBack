@@ -23,16 +23,37 @@ sp500 = sp500.rename(columns={"Return": "SP500_Return"})
 
 # Sidebar navigation
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Home", "Annual 10-K Returns by Company", "Cosine Similarity vs Monthly Return Over Time", "Report"])
+page = st.sidebar.radio("Go to", ["Home", "Annual Returns by Company", "10K Cosine Similarity vs Monthly Return Over Time", "Report"], key="nav", label_visibility="visible")
+st.markdown("<style>.stRadio > div{gap: 1.2em !important;}</style>", unsafe_allow_html=True)
 
 # ---------- Page: Home ----------
 if page == "Home":
     st.title("Home")
-    st.write("Welcome to the 10-K Analysis Dashboard.")
+    st.write("Welcome to our Dashboard!")
+
+
+    st.markdown("""
+    This dashboard explores the relationship between changes in the language of 10-K filings and subsequent stock returns. 
+    We have created various visualizations of our data to help our users understand the correlation between changes in 10-K filings and company stock returns. 
+    """)
+    
+    st.markdown("""
+    This project was inspired by the research paper [Lazy Prices](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1658471), which explores the predictive power of textual changes in 10-K filings. Our analysis aims to replicate and extend these findings through our own implementation.
+
+    The code and data processing for this dashboard were completed in the following GitHub repository: [Final Project Repository](https://github.com/martifigueres/Final-Project-HPST.git).
+    """)
+
+
+    st.markdown("### Explore the Sections")
+    st.markdown("""
+    - **Annual Returns by Company**: Visualize yearly stock returns around 10-K filings for each company along with color-coding depending on degree of change in each year's 10-K.
+    - **Cosine Similarity vs Monthly Return**: Compare changes in 10-K language with subsequent returns.
+    - **Report**: Read about the full methodology, data processing, and motivation behind this analysis.
+    """)
 
 # ---------- Page: Annual 10-K Returns by Company ----------
-elif page == "Annual 10-K Returns by Company":
-    st.title("Annual 10-K Returns by Company")
+elif page == "Annual Returns by Company":
+    st.title("Annual Returns by Company")
 
     st.sidebar.header("Select a Company")
     all_symbols = sorted(data["Symbol"].unique())
@@ -86,11 +107,10 @@ elif page == "Annual 10-K Returns by Company":
         ax.set_xticks(all_years)
         ax.set_xticklabels([str(y) if y % 2 == 0 else ' ' for y in all_years])
 
-        
         st.pyplot(fig)
 
-        st.markdown("### Bin Color Legend")
-        sp500_note = "<span style='color:#bbbbbb; font-weight:bold;'>■</span> S&P 500 Annual Return (faint grey line)"
+        st.markdown("### Line Color Legend")
+        sp500_note = "<span style='color:#bbbbbb; font-weight:bold;'>■</span> S&P 500 Annual Return"
         st.markdown(f"<div style='font-size:16px; margin-bottom:0.5em'>{sp500_note}</div>", unsafe_allow_html=True)
 
         bin_legend = "&emsp;".join(
@@ -101,7 +121,7 @@ elif page == "Annual 10-K Returns by Company":
         st.info("Please select a company to view the chart.")
 
 # ---------- Page: Cosine Similarity vs Monthly Return Over Time ----------
-elif page == "Cosine Similarity vs Monthly Return Over Time":
+elif page == "10K Cosine Similarity vs Monthly Return Over Time":
     st.title("Cosine Similarity vs Monthly Return Over Time")
 
     symbols = sorted(data["Symbol"].unique())
@@ -133,15 +153,15 @@ elif page == "Cosine Similarity vs Monthly Return Over Time":
 else:
     st.title("Report")
     st.write("""
-10-K filings are rich sources of data about a firm's financial health, strategy, and risk factors. However, due to their length and complexity, investors may not fully process all the nuanced information they contain. The "Lazy Prices" paper, which this code closely aligns with, posits that changes in the language used in these filings can signal important shifts in a company's prospects. The authors demonstrate that these textual changes have predictive power for future stock returns, suggesting that the market underreacts to this information initially.
+10-K filings  are rich sources of data about a firm's financial health, strategy, and risk factors. However, due to their length and complexity, investors may not fully process all the nuanced information they contain. The "Lazy Prices" paper, which this code closely aligns with, posits that changes in the language used in these filings can signal important shifts in a company's prospects. The authors demonstrate that these textual changes have predictive power for future stock returns, suggesting that the market underreacts to this information initially.
 
 To empirically investigate this theory, this repo is designed to contain code that performs textual analysis tasks on the 10-K files from 1993 to 2024 for the S&P 500 firms.
 
-These tasks are performed within the file named TextualAnalysis.ipynb:
+These tasks are performed within the file named TextualAnalysis.ipynb : 
 
 - Data Acquisition and Loading: The first step is to gather all the 10-K filings to analyse. There's three ways to go about this:
 
-    - One could fetch the documents using the SEC EDGAR downloader. This method provides the most direct access to the original data but requires significant amount of time to process, clean and prepare the text for analysis.
+    - One could fetch the documents using the SEC EDGAR downloader.  This method provides the most direct access to the original data but requires significant amount of time to process, clean and prepare the text for analysis.
     - One can also download a giant 50 GB folder of all 10-X files in a zipped format. The raw text files are cleaned by removing non-textual data, structural markup, and irrelevant headers/footers to isolate the textual content for analysis.
     - Alternatively, one can also use the Loughran-McDonald 10-K Document Dictionaries file. This 15.8GB (unzipped) text file contains word counts for each word in the LM dictionary for every 10-K filing in the dataset. This was the quickest option, and we decided to use it. 
 
