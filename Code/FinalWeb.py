@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 
 # Load dataset once
 @st.cache_data
-
 def load_data():
     data = pd.read_csv("final_cleaned_output.csv")
     data["Filing Date"] = pd.to_datetime(data["Filing Date"])
@@ -24,25 +23,23 @@ sp500 = sp500.rename(columns={"Return": "SP500_Return"})
 # Sidebar navigation
 st.sidebar.title("Navigation")
 page = st.sidebar.radio("Go to", ["Home", "Annual Returns by Company", "10K Cosine Similarity vs Monthly Return Over Time", "Report"], key="nav", label_visibility="visible")
-st.markdown("<style>.stRadio > div{gap: 1.2em !important;}</style>", unsafe_allow_html=True)
+st.markdown("<style>.stRadio > div{gap: 1.2em !important;} .block-container { padding-top: 1rem !important; }</style>", unsafe_allow_html=True)
 
 # ---------- Page: Home ----------
 if page == "Home":
     st.title("Home")
     st.write("Welcome to our Dashboard!")
 
-
-    st.markdown("""
-    This dashboard explores the relationship between changes in the language of 10-K filings and subsequent stock returns. 
-    We have created various visualizations of our data to help our users understand the correlation between changes in 10-K filings and company stock returns. 
-    """)
-    
     st.markdown("""
     This project was inspired by the research paper [Lazy Prices](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1658471), which explores the predictive power of textual changes in 10-K filings. Our analysis aims to replicate and extend these findings through our own implementation.
 
     The code and data processing for this dashboard were completed in the following GitHub repository: [Final Project Repository](https://github.com/martifigueres/Final-Project-HPST.git).
     """)
 
+    st.markdown("""
+    This dashboard explores the relationship between changes in the language of 10-K filings and subsequent stock returns. 
+    We have created various visualizations of our data to help our users understand the correlation between changes in 10-K filings and company stock returns. 
+    """)
 
     st.markdown("### Explore the Sections")
     st.markdown("""
@@ -53,7 +50,7 @@ if page == "Home":
 
 # ---------- Page: Annual 10-K Returns by Company ----------
 elif page == "Annual Returns by Company":
-    st.title("Annual Returns by Company")
+    st.markdown("<h1 style='margin-top: 0;'>Annual Returns by Company</h1>", unsafe_allow_html=True)
 
     st.sidebar.header("Select a Company")
     all_symbols = sorted(data["Symbol"].unique())
@@ -98,11 +95,8 @@ elif page == "Annual Returns by Company":
         ax.set_xlabel("Year", fontsize=12)
         ax.set_ylabel("Return", fontsize=12)
 
-        # Clean grid with light grey and selected ticks
-        ax.grid(which='major', axis='y', color='#dddddd', linewidth=1, linestyle='-', alpha=0.5)
         ax.axhline(y=0, color='#dddddd', linewidth=1, linestyle='-', alpha=0.5)
 
-        # Set vertical ticks every 5 years only
         all_years = sorted(set(yearly["Year"]).union(sp500_filtered["Year"] if not sp500_filtered.empty else []))
         ax.set_xticks(all_years)
         ax.set_xticklabels([str(y) if y % 2 == 0 else ' ' for y in all_years])
@@ -122,7 +116,7 @@ elif page == "Annual Returns by Company":
 
 # ---------- Page: Cosine Similarity vs Monthly Return Over Time ----------
 elif page == "10K Cosine Similarity vs Monthly Return Over Time":
-    st.title("Cosine Similarity vs Monthly Return Over Time")
+    st.markdown("<h1 style='margin-top: 0;'>Cosine Similarity vs Monthly Return Over Time</h1>", unsafe_allow_html=True)
 
     symbols = sorted(data["Symbol"].unique())
     selected_symbol = st.sidebar.selectbox("Choose a company:", symbols)
@@ -139,9 +133,9 @@ elif page == "10K Cosine Similarity vs Monthly Return Over Time":
     ax1.tick_params(axis="y", labelcolor="blue")
 
     ax2 = ax1.twinx()
-    ax2.plot(monthly_return.index, monthly_return.values, '-s', color="darkorange", label="Return (smoothed)")
-    ax2.set_ylabel("Return (%)", color="darkorange")
-    ax2.tick_params(axis="y", labelcolor="darkorange")
+    ax2.plot(monthly_return.index, monthly_return.values, '-s', color="#cc6600", label="Return (smoothed)")
+    ax2.set_ylabel("Return (%)", color="#cc6600")
+    ax2.tick_params(axis="y", labelcolor="#cc6600")
 
     plt.title(f"{selected_symbol} - Cosine Similarity & Returns Over Time")
     fig.tight_layout()
