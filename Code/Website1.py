@@ -84,19 +84,22 @@ elif page == "Annual 10-K Returns by Company":
         # Set vertical ticks every 5 years only
         all_years = sorted(set(yearly["Year"]).union(sp500_filtered["Year"] if not sp500_filtered.empty else []))
         ax.set_xticks(all_years)
-        ax.set_xticklabels([str(y) if y % 2 == 0 else ' ' for y in all_years])
+        ax.set_xticklabels([str(y) if y % 2 == 0 else '' for y in all_years])
 
-        
+        # Add major gridlines every 5 years only
+        for y in all_years:
+            if y % 5 == 0:
+                ax.axvline(x=y, color='#dddddd', linewidth=1, linestyle='-', alpha=0.5)
+                pass  # fixed erroneous list comprehension
+
         st.pyplot(fig)
 
-        st.markdown("### Line Color Legend")
-        sp500_note = "<span style='color:#bbbbbb; font-weight:bold;'>■</span> S&P 500 Annual Return (faint grey line)"
-        st.markdown(f"<div style='font-size:16px; margin-bottom:0.5em'>{sp500_note}</div>", unsafe_allow_html=True)
-
+        st.markdown("### Bin Color Legend")
         bin_legend = "&emsp;".join(
             [f"<span style='color:{bin_colors[b]}; font-weight:bold;'>■</span> {bin_labels[b]}" for b in sorted(bin_colors)]
         )
-        st.markdown(f"<div style='font-size:16px;'>{bin_legend}</div>", unsafe_allow_html=True)
+        sp500_note = "<span style='color:#bbbbbb; font-weight:bold;'>■</span> S&P 500 Annual Return (faint grey line)"
+        st.markdown(f"<div style='font-size:16px;'>{bin_legend}&emsp;{sp500_note}</div>", unsafe_allow_html=True)
     else:
         st.info("Please select a company to view the chart.")
 
